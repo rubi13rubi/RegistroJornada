@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cambio de contraseña</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <div>
+            <h1>Cambiar contraseña</h1>
+            <form id="formulario">
+                <label for="pwvieja">Contraseña vieja:</label>
+                <input type="password" id="pwvieja" name="pwvieja" required>
+
+                <label for="pwnueva">Contraseña nueva:</label>
+                <input type="password" id="pwnueva" name="pwnueva" required>
+
+                <label for="pwnuevar">Repetir contraseña nueva:</label>
+                <input type="password" id="pwnuevar" name="pwnuevar" required>
+
+                <button type="submit">Confirmar</button>
+            </form>
+            <p id="error-message" style="color: red;"></p> <!-- Mensaje de error -->
+            <p id="success-message" style="color: green;"></p> <!-- Mensaje de exito -->
+            <a href="areapersonal.html">Volver al área personal</a>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $("#formulario").submit(function (event) {
+                    event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
+
+                    const pwvieja = $("#pwvieja").val();
+                    const pwnueva = $("#pwnueva").val();
+                    const pwnuevar = $("#pwnuevar").val();
+                    $("#error-message").text("");
+                    $("#success-message").text("");
+                    if (pwnueva === pwnuevar) {
+                        if (pwvieja.length <= 50) {
+                            // Envía los datos al servlet usando AJAX
+                            $.ajax({
+                                url: "CambiarPassword", // URL del servlet
+                                type: "POST",
+                                data: {passwordVieja: pwvieja, passwordNueva: pwnueva},
+                                success: function (response) {
+                                    if (response === "correcto") {
+                                        // Muestra mensaje de éxito
+                                        $("#success-message").text("Contraseña cambiada correctamente.");
+                                    } else if (response === "no_autorizado") {
+                                        // Muestra el mensaje de error debajo del formulario
+                                        $("#error-message").text("Error. Tu usuario no está autorizado para esta acción.");
+                                    } else if(response === "incorrecto"){
+                                        // Muestra el mensaje de error debajo del formulario
+                                        $("#error-message").text("La contraseña vieja no es correcta.");
+                                    }
+                                    else{
+                                        // Muestra el mensaje de error debajo del formulario
+                                        $("#error-message").text("Error en el servidor. Inténtelo de nuevo más tarde.");
+                                    }
+                                },
+                                error: function () {
+                                    $("#error-message").text("Error al contactar con el servidor. Inténtelo de nuevo más tarde.");
+                                }
+                            });
+                        } else
+                            $("#error-message").text("La contraseña nueva no puede ser mayor a 50 caracteres.");
+                    } else
+                        $("#error-message").text("Las contraseñas introducidas no coinciden.");
+                });
+            });
+        </script>
+    </body>
+</html>

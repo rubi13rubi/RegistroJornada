@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <div>
+            <h1>Crear primer usuario de encargado</h1>
+            <h2>Utiliza esta función si aún no dispones de ninguna cuenta de encargado</h2>
+            <form id="createForm">
+                <label for="usuario">Usuario:</label>
+                <input type="text" id="usuario" name="usuario" required>
+
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="passwordr">Repetir contraseña:</label>
+                <input type="password" id="passwordr" name="passwordr" required>
+
+                <button type="submit">Crear usuario</button>
+            </form>
+            <p id="error-message" style="color: red;"></p> <!-- Mensaje de error -->
+            <p id="success-message" style="color: green;"></p> <!-- Mensaje de exito -->
+            <a href="index.html">Volver a inicio de sesión</a>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $("#createForm").submit(function (event) {
+                    event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
+
+                    const usuario = $("#usuario").val();
+                    const password = $("#password").val();
+                    const passwordr = $("#passwordr").val();
+                    $("#error-message").text("");
+                    $("#success-message").text("");
+                    if (password === passwordr) {
+                        if (usuario.length <= 60 && password.length <= 50) {
+
+                            // Envía los datos al servlet usando AJAX
+                            $.ajax({
+                                url: "TryCrearPrimerUsuario", // URL del servlet
+                                type: "POST",
+                                data: {usuario: usuario, password: password},
+                                success: function (response) {
+                                    if (response === "correcto") {
+                                        // Muestra mensaje de éxito
+                                        $("#success-message").text("Usuario creado correctamente.");
+                                    } else if (response === "incorrecto"){
+                                        // Muestra el mensaje de error debajo del formulario
+                                        $("#error-message").text("Ya existe al menos un encargado o ha ocurrido un error.");
+                                    } else{
+                                        $("#error-message").text("Error en el servidor. Inténtelo de nuevo más tarde.");
+                                    }
+                                },
+                                error: function () {
+                                    $("#error-message").text("Error al contactar con el servidor. Inténtelo de nuevo más tarde.");
+                                }
+                            });
+                        } else
+                            $("#error-message").text("Usuario o contraseña demasiado largos. Maximo 60 caracteres para usuario y 50 para contraseña");
+                    } else
+                        $("#error-message").text("Las contraseñas introducidas no coinciden.");
+                });
+            });
+        </script>
+    </body>
+</html>

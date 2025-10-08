@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <div>
+            <h1>Inicio de sesión</h1>
+            <form id="loginForm">
+                <label for="usuario">Usuario:</label>
+                <input type="text" id="usuario" name="usuario" required>
+
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" required>
+
+                <button type="submit">Iniciar sesión</button>
+            </form>
+            <p id="error-message" style="color: red;"></p> <!-- Mensaje de error -->
+            <p>Si aún no tienes ninguna cuenta de encargado, <a href="primerusuario.html">haz click aquí</a></p>   
+        </div>
+        <div>
+            <p style="color: gray"><i>Publigaver SL <br> CIF B39723754</i></p>   
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $("#loginForm").submit(function (event) {
+                    event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
+
+                    const usuario = $("#usuario").val();
+                    const password = $("#password").val();
+
+                    // Envía los datos al servlet usando AJAX
+                    $.ajax({
+                        url: "TryLogin", // URL del servlet
+                        type: "POST",
+                        data: {usuario: usuario, password: password},
+                        success: function (response) {
+                            if (response === "correcto") {
+                                // Redirige al área personal si el login es exitoso
+                                $("#error-message").text("");
+                                window.location.href = "areapersonal.html";
+                            } else {
+                                // Muestra el mensaje de error debajo del formulario
+                                $("#error-message").text("Usuario o contraseña incorrectos");
+                            }
+                        },
+                        error: function () {
+                            $("#error-message").text("Error en el servidor. Inténtelo de nuevo más tarde.");
+                        }
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
