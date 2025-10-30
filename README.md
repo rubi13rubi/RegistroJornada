@@ -173,6 +173,14 @@ Y en la parte de abajo, justo antes de la linea `</Context>` pega este texto, ut
         <CookieProcessor className="org.apache.tomcat.util.http.Rfc6265CookieProcessor" />
         <SessionCookie secure="true" httpOnly="true" path="/"/>
 ```
+Opcionalmente, también puedes configurar justo debajo un texto de firma personalizado que saldrá en la página de inicio de sesión y en los archvos descargados. Puedes poner aquí el nombre de tu empresa. Pega este texto cambiando el texto por tu mensaje. Podrás cambiarlo o eliminarlo en cualquier momento.
+
+```
+<Parameter name="FirmaPersonalizada" value="escribe tu texto aqui" override="false"/>
+```
+
+
+
 Sal del editor nano pulsando `ctrl + x` y guarda el archivo.
 
 ### 5. Despliegue de la aplicación
