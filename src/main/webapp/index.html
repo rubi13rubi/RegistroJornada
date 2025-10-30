@@ -22,7 +22,7 @@
             <p>Si aún no tienes ninguna cuenta de encargado, <a href="primerusuario.html">haz click aquí</a></p>   
         </div>
         <div>
-            <p id="textocustom" style="color: gray"></p>   
+            <p id="textocustom" style="color: gray; font-style: italic"></p>
         </div>
 
         <script>
@@ -33,7 +33,7 @@
                     type: "GET",
                     success: function (response) {
                         // Muestra el texto
-                        $("#textocustom").text("<i>" + response + "</i>");
+                        $("#textocustom").text(response);
                     },
                     error: function () {
                         $("#textocustom").text("Error obteniendo la firma personalizada.");
