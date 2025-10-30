@@ -27,8 +27,8 @@ public class CSVExporter {
     public static String registrosToCSV(List<Registro> lista) {
         StringBuilder sb = new StringBuilder();
         // Cabecera de nombre de empresa
-        sb.append("Publigaver SL").append(SEPARADOR)
-                .append("CIF B39723754").append("\n");
+        String nombre = TextoCustomProvider.obtenerTexto(ContextHolder.getContext());
+        sb.append(nombre).append("\n");
         // Cabecera
         sb.append("Fecha").append(SEPARADOR)
                 .append("Hora").append(SEPARADOR)

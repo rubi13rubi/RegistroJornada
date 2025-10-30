@@ -22,11 +22,25 @@
             <p>Si aún no tienes ninguna cuenta de encargado, <a href="primerusuario.html">haz click aquí</a></p>   
         </div>
         <div>
-            <p style="color: gray"><i>Publigaver SL <br> CIF B39723754</i></p>   
+            <p id="textocustom" style="color: gray"></p>   
         </div>
 
         <script>
             $(document).ready(function () {
+                // Obtiene los datos del texto de firma personalizado
+                $.ajax({
+                    url: "TryGetTextoCustom", // URL del servlet que devuelve los datos del usuario
+                    type: "GET",
+                    success: function (response) {
+                        // Muestra el texto
+                        $("#textocustom").text("<i>" + response + "</i>");
+                    },
+                    error: function () {
+                        $("#textocustom").text("Error obteniendo la firma personalizada.");
+                    }
+                });
+                
+                
                 $("#loginForm").submit(function (event) {
                     event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
 
