@@ -57,9 +57,13 @@
                                 // Redirige al área personal si el login es exitoso
                                 $("#error-message").text("");
                                 window.location.href = "areapersonal.html";
-                            } else {
+                            } else if (response === "incorrecto") {
                                 // Muestra el mensaje de error debajo del formulario
                                 $("#error-message").text("Usuario o contraseña incorrectos");
+                            }
+                            else {
+                                // Muestra el mensaje de error de base de datos
+                                $("#error-message").text("Error al contactar con la base de datos");
                             }
                         },
                         error: function () {

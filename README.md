@@ -157,12 +157,13 @@ cd /opt/tomcat/lib
 sudo wget https://downloads.mariadb.com/Connectors/java/latest/mariadb-java-client-2.3.0.jar
 sudo chown tomcat:tomcat mariadb-java-client-2.3.0.jar
 ```
-Para configurarlo, abre el archivo de `context.xml`:
+Para configurarlo, crea y abre el archivo de contexto de tu aplicación:
 ```
-sudo nano /opt/tomcat/conf/context.xml
+sudo nano /opt/tomcat/conf/Catalina/localhost/RegistroJornada.xml
 ```
-Y en la parte de abajo, justo antes de la linea `</Context>` pega este texto, utilizando el usuario y contraseña definidos anteriormente:
+Y añade el siguiente texto:
 ```
+<Context docBase="/opt/tomcat/webapps/RegistroJornada.war" path="" sessionCookiePath="/">
 <Resource name="jdbc/registrosDB" auth="Container"
           type="javax.sql.DataSource"
           maxTotal="100" maxIdle="30" maxWaitMillis="10000"
@@ -171,15 +172,13 @@ Y en la parte de abajo, justo antes de la linea `</Context>` pega este texto, ut
           url="jdbc:mariadb://localhost:3306/registrosDB"/>
 
         <CookieProcessor className="org.apache.tomcat.util.http.Rfc6265CookieProcessor" />
-        <SessionCookie secure="true" httpOnly="true" path="/"/>
+        <SessionCookie secure="true" httpOnly="true" />
+        <Parameter name="FirmaPersonalizada" value="" override="false"/>
+</Context>
 ```
-Opcionalmente, también puedes configurar justo debajo un texto de firma personalizado que saldrá en la página de inicio de sesión y en los archvos descargados. Puedes poner aquí el nombre de tu empresa. Pega este texto cambiando el texto por tu mensaje. Podrás cambiarlo o eliminarlo en cualquier momento.
+Cambia usuario y password por el usuario y contraseña definidos anteriormente.
 
-```
-<Parameter name="FirmaPersonalizada" value="escribe tu texto aqui" override="false"/>
-```
-
-
+Opcionalmente, también puedes configurar un texto de firma personalizado que saldrá en la página de inicio de sesión y en los archvos descargados. Simplemente edita el campo value del parámetro FirmaPersonalizada al texto que quieras.
 
 Sal del editor nano pulsando `ctrl + x` y guarda el archivo.
 

@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Área Personal</title>
+        <title>Editar usuarios</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <style>
             table, th, td {
@@ -51,95 +51,33 @@
         </style>
     </head>
     <body>
+        <h1>Modificar usuarios</h1>
         <div>
-            <h1 id="bienvenida">Cargando...</h1>
-            <h2 id="datos-usuario">Cargando datos del usuario...</h2>
-            <div id="div-encargado" style="display: none; background-color: lightgray">
-                <div style="background-color: darkgray">
-                    <h3>Crear nuevo usuario</h3>
-                    <p>Crea una nueva cuenta de encargado o empleado.</p>
-                    <form id="form-crear">
-                        <label for="usuario">Usuario:</label>
-                        <input type="text" id="usuario" name="usuario" required>
-
-                        <label for="password">Contraseña:</label>
-                        <input type="password" id="password" name="password" required>
-
-                        <label for="passwordr">Repetir contraseña:</label>
-                        <input type="password" id="passwordr" name="passwordr" required>
-
-                        <select id="rol" required size="2">
-                            <option value="Empleado">Empleado</option>
-                            <option value="Encargado">Encargado</option>
-                        </select> 
-
-                        <button type="submit">Crear usuario</button>
-                    </form>
-                    <p id="error-message" style="color: red;"></p> <!-- Mensaje de error -->
-                    <p id="success-message" style="color: green;"></p> <!-- Mensaje de exito -->
-                </div>
-                <div style="background-color: darkgray">
-                    <h3>Descargar datos de todos los empleados</h3>
-                    <p>Descarga archivos con los datos de registros de todos los empleados en el rango de fechas seleccionado.</p>
-                    <form id="form-descarga" action="TryDescargarRegistrosZip" method="GET">
-                        <label for="fecha-inicio">Fecha de inicio: </label>
-                        <input type="date" id="fecha-inicio" name="fechaInicio" required>
-                        <label for="fecha-fin">Fecha de fin: </label>
-                        <input type="date" id="fecha-fin" name="fechaFin" required>
-                        <button type="submit">Descargar datos</button>
-                    </form>
-                </div>
-                <div style="background-color: darkgray">
-                    <h3>Consulta de datos recientes</h3>
-                    <p>Consulta en una tabla los últimos registros de un empleado y descarga sus datos.</p>
-                    <form id="form-consulta">
-                        <label for="selector-empleados">Selecciona un empleado: </label>
-                        <select id="selector-empleados">
-                        </select>
-                        <button type="submit">Consultar empleado</button>
-                    </form>
-                </div>
-            </div>
-            <div id = "div-empleado" style="display: none; background-color: lightgray">
-                <form id="form-registro">
-                    <h3 id="estado-actual">Cargando estado...</h3>
-                    <button type="submit">Fichar</button>
-                </form>
-                <p id="error-registro" style="color: red;"></p> <!-- Mensaje de error -->
-            </div>
-            <div id = "div-tabla" style="background-color: lightgray">
-                <h2 id="titulo-tabla">Últimos registros</h2>
-                <p id="error-consulta" style="color: red;"></p> <!-- Mensaje de error -->
-                <table id="tabla">
-                    <thead>
-                        <tr>
-                            <th>Dia</th>
-                            <th>Hora</th>
-                            <th>Tipo</th>
-                            <th>Horas acumuladas</th>
-                            <th>Notas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Las filas se agregarán aquí -->
-                    </tbody>
-                </table>
-                <button id="descargar-datos">Descargar todos los datos</button>
-            </div>
-            <button id="cambiar-password">Cambiar contraseña</button>
-            <button id="logout">Cerrar sesión</button>
+            <h2>Empleados</h2>
+            <table id="tabla-empleados">
+                <tbody>
+                    <!-- Las filas se agregarán aquí -->
+                </tbody>
+            </table>
+            <h2>Encargados</h2>
+            <table id="tabla-encargados">
+                <tbody>
+                    <!-- Las filas se agregarán aquí -->
+                </tbody>
+            </table>
+            <p id="error-consulta" style="color: red;"></p> <!-- Mensaje de error -->
+            <button id="volver">Volver al área personal</button>
         </div>
 
         <div id="modal" class="modal">
-            <div>
+            <h3 id="modal-titulo">¿Confirmar?</h3>
             <p id="modal-texto"></p>
-            </div>
-            <form id="form-nota">
-                <input type="text" id="texto-nota" name="texto-nota" placeholder="Escribe una nota..." required>
-                <button type="submit" id="submit-nota">Publicar nota</button>
+            <form id="form-confirmar">
+                <input type="text" id="modal-textbox" name="0" required>
+                <button type="submit" id="modal-submit" name="0">Confirmar</button>
             </form>
-            <p id="error-nota" style="color: red;"></p> <!-- Mensaje de error -->
-            <button onclick="cerrarModal()">Cerrar</button>
+            <p id="error-confirmacion" style="color: red;"></p> <!-- Mensaje de error -->
+            <button onclick="cerrarModal()">Cancelar</button>
         </div>
 
         <div id="overlay" class="overlay" onclick="cerrarModal()"></div>
@@ -242,9 +180,9 @@
                             texto = "Error desconocido. Intentelo de nuevo más tarde.";
                         }
                         document.getElementById("modal-texto").innerHTML = texto; //Sustituir por texto de notas
+                        document.getElementById("submit-nota").name = id; // Pone el id en el boton de crear nota
                         document.getElementById("error-nota").textContent = ""; // Reinicia el mensaje de error
                         document.getElementById("texto-nota").value = ""; // Reinicia la textbox
-                        modal.dataset.idRegistro = id; // Guarda el id del registro con el que se abre el modal
                         document.getElementById("modal").style.display = "block";
                         document.getElementById("overlay").style.display = "block";
                     },
@@ -352,7 +290,7 @@
 
             $("#form-nota").submit(function (event) { // Manejo del formulario de publicar nota
                 event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
-                const id = modal.dataset.idRegistro; // Recupera el nombre del registro que muestra el modal
+                const id = document.getElementById("submit-nota").name;
                 const texto = $("#texto-nota").val();
                 if (texto.length <= 255) {
                     // Envía los datos al servlet usando AJAX

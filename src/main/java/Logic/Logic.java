@@ -58,7 +58,7 @@ public class Logic {
         } finally {
             conector.closeConnection(con);
         }
-        return 0;
+        return -1;
     }
 
     public static Boolean hayEncargados() {

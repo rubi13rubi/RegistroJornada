@@ -58,6 +58,9 @@ public class TryLogin extends HttpServlet {
                         session.setAttribute("rol", "encargado");
                         response.getWriter().write("correcto");
                     }
+                case -1 ->                     { // Error de base de datos o de servidor
+                        response.getWriter().write("error");
+                    }
                 default -> // Redirige a una página de error o muestra un mensaje en el formulario
                     response.getWriter().write("incorrecto");
             }
