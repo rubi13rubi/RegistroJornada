@@ -196,9 +196,8 @@
                     celdahoras.textContent = formatMinutesToHHMM(registro.minutosAcumulados);
                     const botonnotas = document.createElement("button");
                     botonnotas.textContent = "Ver notas";
-                    botonnotas.id = registro.id;
                     botonnotas.onclick = function () {
-                        abrirModal(botonnotas.id);
+                        abrirModal(registro.id);
                     };
                     celdanotas.appendChild(botonnotas);
                 });

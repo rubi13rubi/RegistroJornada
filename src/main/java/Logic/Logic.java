@@ -343,6 +343,38 @@ public class Logic {
     }
     
     /**
+     * Obtiene una lista con los nombres de todos los encargados
+     * @return lista de nombres
+     */
+    public static List<String> getEncargados() {
+        ConectionDDBB conector = new ConectionDDBB();
+        Connection con = null;
+        List<String> resultado = new ArrayList<>();
+        try {
+            con = conector.obtainConnection(true);
+            Log.log.info("Database Connected");
+            PreparedStatement ps;
+            ps = ConectionDDBB.GetNombreEncargados(con);
+
+            Log.log.info("Query => " + ps.toString());
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()){
+                resultado.add(rs.getString("nombre_encargado"));
+            }
+        } catch (SQLException e) {
+            Log.log.error("Error al obtener la lista de encargados: " + e);
+        } catch (NullPointerException e) {
+            Log.log.error("Error: " + e);
+        } catch (Exception e) {
+            Log.log.error("Error inesperado: " + e);
+        } finally {
+            conector.closeConnection(con);
+        }
+        return resultado;
+    }
+    
+    /**
      * Intenta crear un registro en la base de datos en funcion de los parametros indicados
      * @param usuario Nombre del empleado para crear el registro
      * @param fecha Fecha del registro

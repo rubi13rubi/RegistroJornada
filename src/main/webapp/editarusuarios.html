@@ -73,8 +73,8 @@
             <h3 id="modal-titulo">¿Confirmar?</h3>
             <p id="modal-texto"></p>
             <form id="form-confirmar">
-                <input type="text" id="modal-textbox" name="0" required>
-                <button type="submit" id="modal-submit" name="0">Confirmar</button>
+                <input type="text" id="modal-textbox" required>
+                <button type="submit" id="modal-submit">Confirmar</button>
             </form>
             <p id="error-confirmacion" style="color: red;"></p> <!-- Mensaje de error -->
             <button onclick="cerrarModal()">Cancelar</button>
@@ -85,111 +85,84 @@
             $(document).ready(function () {
                 // Obtiene los datos del usuario desde el servlet
                 $.ajax({
-                    url: "GetUser", // URL del servlet que devuelve los datos del usuario
+                    url: "TryGetUsuarios", // URL del servlet que devuelve los nombres de los usuarios
                     type: "GET",
                     success: function (response) {
-                        // Muestra los datos del usuario
+                        // Muestra los datos de los usuarios en las tablas
                         try {
-                            $("#bienvenida").text("Bienvenido/a, " + response.usuario + "!");
-                            $("#datos-usuario").text("Rol: " + response.rol);
-                            if (response.rol === "empleado") {
-                                let divempleado = document.getElementById("div-empleado");
-                                divempleado.style.display = "block";
-                                $("#estado-actual").text("Estado actual: " + response.estado);
-                                updatetabla(response.datos); //Si es empleado, devuelve una lista con sus registros para cargar en la tabla              
-                                let option = document.createElement('option');
-                                option.value = response.usuario;
-                                option.text = response.usuario;
-                                document.getElementById("selector-empleados").appendChild(option);
-                            } else if (response.rol === "encargado") {
-                                let divencargado = document.getElementById("div-encargado");
-                                divencargado.style.display = "block";
-                                updateselector(response.datos);//Si es encargado, devuelve una lista con los nombres de empleados para cargar en el selector
-                            }
+                            updatetabla(response.empleados, "empleado");
+                            updatetabla(response.encargados, "encargado");
                         } catch (error) {
-                            $("#bienvenida").text("Error al obtener los datos del usuario.");
-                            $("#datos-usuario").text("Es posible que no tengas la sesión iniciada. Haz clic en cerrar sesión y vuelve a introducir tus credenciales.");
+                            $("#error-consulta").text("Error al consultar la lista de usuarios. Verifica que tienes la sesión iniciada con un usuario autorizado.");
                         }
                     },
                     error: function () {
-                        $("#bienvenida").text("Error al cargar los datos del usuario.");
-                        $("#datos-usuario").text("Es posible que no tengas la sesión iniciada. Haz clic en cerrar sesión y vuelve a introducir tus credenciales.");
+                        $("#error-consulta").text("Error al consultar la lista de usuarios. Verifica que tienes la sesión iniciada con un usuario autorizado.");
                     }
                 });
             });
 
-            function updatetabla(listaregistros) {
-                let tabla = document.getElementById("tabla").getElementsByTagName("tbody")[0];
+            function updatetabla(listanombres, rol) {
+                let tabla;
+                if (rol === "empleado") {
+                    tabla = document.getElementById("tabla-empleados").getElementsByTagName("tbody")[0];
+                } else {
+                    tabla = document.getElementById("tabla-encargados").getElementsByTagName("tbody")[0];
+                }
+
                 tabla.innerHTML = "";
-                listaregistros.forEach(registro => {
+                listanombres.forEach(nombre => {
                     let fila = tabla.insertRow();
-                    let celdadia = fila.insertCell(0);
-                    let celdahora = fila.insertCell(1);
-                    let celdatipo = fila.insertCell(2);
-                    let celdahoras = fila.insertCell(3);
-                    let celdanotas = fila.insertCell(4);
-                    celdadia.textContent = registro.fecha;
-                    celdahora.textContent = registro.hora;
-                    celdatipo.textContent = registro.tipo;
-                    celdahoras.textContent = formatMinutesToHHMM(registro.minutosAcumulados);
-                    const botonnotas = document.createElement("button");
-                    botonnotas.textContent = "Ver notas";
-                    botonnotas.id = registro.id;
-                    botonnotas.onclick = function () {
-                        abrirModal(botonnotas.id);
+                    let celdanombre = fila.insertCell(0);
+                    let celdacambiarnombre = fila.insertCell(1);
+                    let celdacambiarrol = fila.insertCell(2);
+                    let celdaborrar = fila.insertCell(3);
+
+                    celdanombre.textContent = nombre;
+
+                    const botoncambiarnombre = document.createElement("button");
+                    botoncambiarnombre.textContent = "Cambiar nombre";
+                    botoncambiarnombre.onclick = function () {
+                        abrirModal(nombre, rol, "cambiarnombre");
                     };
-                    celdanotas.appendChild(botonnotas);
+                    celdacambiarnombre.appendChild(botoncambiarnombre);
+
+                    const botoncambiarrol = document.createElement("button");
+                    botoncambiarrol.textContent = "Cambiar rol";
+                    botoncambiarrol.onclick = function () {
+                        abrirModal(nombre, rol, "cambiarrol");
+                    };
+                    celdacambiarrol.appendChild(botoncambiarrol);
+
+                    const botonborrar = document.createElement("button");
+                    botonborrar.textContent = "Borrar usuario";
+                    botonborrar.onclick = function () {
+                        abrirModal(nombre, rol, "borrar");
+                    };
+                    celdaborrar.appendChild(botonborrar);
                 });
             }
 
-            function formatMinutesToHHMM(totalMinutes) {
-                const hours = Math.floor(totalMinutes / 60);
-                const minutes = totalMinutes % 60;
-                // Aseguramos que siempre haya dos dígitos en los minutos
-                return `${hours}:${minutes.toString().padStart(2, '0')}`;
-            }
+            function abrirModal(nombre, rol, accion) {
 
-            function updateselector(listaempleados) {
-                let selector = document.getElementById("selector-empleados");
-                listaempleados.forEach(empleado => {
-                    let option = document.createElement('option');
-                    option.value = empleado;
-                    option.text = empleado;
-                    selector.appendChild(option);
-                });
-            }
+                if (accion === "cambiarnombre") {
+                    document.getElementById("modal-texto").innerHTML = "Estás a punto de cambiar el nombre del usuario <b>" + nombre + "</b>. Introduce el nuevo nombre a continuación.";
+                    document.getElementById("modal-submit").style = "";
+                } else if (accion === "cambiarrol") {
+                    document.getElementById("modal-texto").innerHTML = "Estás a punto de cambiar el rol del usuario <b>" + nombre + "</b>. Para confirmar esta acción, escribe el nombre completo del usuario a continuación. <b>ATENCIÓN: CAMBIAR DE EMPLEADO A ENCARGADO BORRARÁ TODOS SUS REGISTROS DE FORMA IRREVERSIBLE.</b>";
+                    document.getElementById("modal-submit").style = "color: red;";
+                } else { // Accion de borrar
+                    document.getElementById("modal-texto").innerHTML = "Estás a punto de borrar el usuario <b>" + nombre + "</b>. Para confirmar esta acción, escribe el nombre completo del usuario a continuación. <b>ATENCIÓN: BORRAR UN USUARIO BORRARÁ TODOS SUS REGISTROS Y NOTAS DE FORMA IRREVERSIBLE.</b>";
+                    document.getElementById("modal-submit").style = "color: red;";
+                }
 
-            function abrirModal(id) {
-                // Envía los datos al servlet usando AJAX
-                $.ajax({
-                    url: "TryGetNotas", // URL del servlet
-                    type: "GET",
-                    data: {idRegistro: id},
-                    success: function (response) {
-                        let texto = "";
-                        if (response.estado === "correcto") {
-                            // Actualiza el texto con las notas
-                            response.notas.forEach(nota => {
-                                texto += nota.autor + " (" + nota.fecha + " a las " + nota.hora + "): " + nota.texto + "<br>";
-                            });
-                        } else if (response.estado === "no_autorizado") {
-                            // Error de permisos
-                            texto = "Error. Tu usuario no está autorizado para esta acción.";
-                        } else {
-                            // Error desconocido
-                            texto = "Error desconocido. Intentelo de nuevo más tarde.";
-                        }
-                        document.getElementById("modal-texto").innerHTML = texto; //Sustituir por texto de notas
-                        document.getElementById("submit-nota").name = id; // Pone el id en el boton de crear nota
-                        document.getElementById("error-nota").textContent = ""; // Reinicia el mensaje de error
-                        document.getElementById("texto-nota").value = ""; // Reinicia la textbox
-                        document.getElementById("modal").style.display = "block";
-                        document.getElementById("overlay").style.display = "block";
-                    },
-                    error: function () {
-                        $("#error-consulta").text("Error al contactar con el servidor. Inténtelo de nuevo más tarde.");
-                    }
-                });
+                document.getElementById("error-confirmacion").textContent = ""; // Reinicia el mensaje de error
+                document.getElementById("modal-textbox").value = ""; // Reinicia la textbox
+                modal.dataset.nombre = nombre; // Guarda los datos en el dataset del modal
+                modal.dataset.rol = rol;
+                modal.dataset.accion = accion;
+                document.getElementById("modal").style.display = "block";
+                document.getElementById("overlay").style.display = "block";
             }
 
             function cerrarModal() {
@@ -197,96 +170,6 @@
                 document.getElementById("overlay").style.display = "none";
             }
 
-            $("#form-crear").submit(function (event) {
-                event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
-
-                const usuario = $("#usuario").val();
-                const password = $("#password").val();
-                const passwordr = $("#passwordr").val();
-                const rol = $("#rol").val();
-                $("#error-message").text("");
-                $("#success-message").text("");
-                if (password === passwordr) {
-                    if (usuario.length <= 60 && password.length <= 50) {
-
-                        // Envía los datos al servlet usando AJAX
-                        $.ajax({
-                            url: "CrearUsuario", // URL del servlet
-                            type: "POST",
-                            data: {usuario: usuario, password: password, rol: rol},
-                            success: function (response) {
-                                if (response === "correcto") {
-                                    // Muestra mensaje de éxito
-                                    $("#success-message").text("Usuario creado correctamente.");
-                                } else if (response === "no_autorizado") {
-                                    // Muestra el mensaje de error debajo del formulario
-                                    $("#error-message").text("Error. Tu usuario no está autorizado para esta acción.");
-                                } else if (response === "incorrecto") {
-                                    // Muestra el mensaje de error debajo del formulario
-                                    $("#error-message").text("Error. Ya existe un usuario con ese nombre");
-                                } else {
-                                    // Muestra el mensaje de error debajo del formulario
-                                    $("#error-message").text("Error en el servidor. Inténtelo de nuevo más tarde.");
-                                }
-                            },
-                            error: function () {
-                                $("#error-message").text("Error al contactar con el servidor. Inténtelo de nuevo más tarde.");
-                            }
-                        });
-                    } else
-                        $("#error-message").text("Usuario o contraseña demasiado largos. Maximo 60 caracteres para usuario y 50 para contraseña");
-                } else
-                    $("#error-message").text("Las contraseñas introducidas no coinciden.");
-            });
-
-            $("#form-consulta").submit(function (event) { // Manejo del formulario de consulta de registros
-                event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
-                // Envía los datos al servlet usando AJAX
-                $.ajax({
-                    url: "TryGetRegistros", // URL del servlet
-                    type: "GET",
-                    data: {usuario: $("#selector-empleados").val()},
-                    success: function (response) {
-                        if (response.estado === "correcto") {
-                            // Actualiza la tabla con los registros devueltos
-                            updatetabla(response.registros);
-                        } else if (response.estado === "no_autorizado") {
-                            // Muestra el mensaje de error debajo del formulario
-                            $("#error-consulta").text("Error. Tu usuario no está autorizado para esta acción.");
-                        } else {
-                            // Muestra el mensaje de error debajo del formulario
-                            $("#error-consulta").text("Error desconocido. Intentelo de nuevo más tarde.");
-                        }
-                    },
-                    error: function () {
-                        $("#error-consulta").text("Error al contactar con el servidor. Inténtelo de nuevo más tarde.");
-                    }
-                });
-            });
-
-            $("#form-registro").submit(function (event) { // Manejo del formulario de fichar
-                event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
-                // Envía los datos al servlet usando AJAX
-                $.ajax({
-                    url: "TryCrearRegistro", // URL del servlet
-                    type: "GET",
-                    success: function (response) {
-                        if (response === "correcto") {
-                            // Actualiza la pagina para mostrar el nuevo estado y el registro en la tabla
-                            window.location.href = "areapersonal.html";
-                        } else if (response === "no_autorizado") {
-                            // Muestra el mensaje de error debajo del formulario
-                            $("#error-registro").text("Error. Tu usuario no está autorizado para esta acción.");
-                        } else {
-                            // Muestra el mensaje de error debajo del formulario
-                            $("#error-registro").text("Error desconocido. Intentelo de nuevo más tarde.");
-                        }
-                    },
-                    error: function () {
-                        $("#error-registro").text("Error al contactar con el servidor. Inténtelo de nuevo más tarde.");
-                    }
-                });
-            });
 
             $("#form-nota").submit(function (event) { // Manejo del formulario de publicar nota
                 event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
@@ -318,19 +201,6 @@
                     $("#error-nota").text("La nota no puede tener más de 255 caracteres.");
                 }
             });
-
-            $("#descargar-datos").on("click", function (e) {
-                e.preventDefault();
-                const usuario = $("#selector-empleados").val();
-                window.location.href = "TryDescargarRegistros?usuario=" + encodeURIComponent(usuario);
-            });
-
-            $("#cambiar-password").on("click", function (e) {
-                e.preventDefault(); // Evita que el enlace redirija directamente
-                // Realiza una solicitud AJAX para cerrar la sesión
-                window.location.href = "cambiarpw.html";
-            }
-            );
 
             $("#logout").on("click", function (e) {
                 e.preventDefault(); // Evita que el enlace redirija directamente

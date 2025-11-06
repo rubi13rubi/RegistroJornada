@@ -97,23 +97,28 @@ public class ConectionDDBB {
     }
 
     public static PreparedStatement CrearEmpleado(Connection con) {
-        // Crea un nuevo usuario encargado
+        // Crea un nuevo usuario empleado
         return getStatement(con, "INSERT INTO Empleados(nombre_empleado, hash_pw) VALUES (?, ?)");
     }
 
     public static PreparedStatement GetEncargados(Connection con) {
-        // Crea un nuevo usuario encargado
+        // Obtiene todos los encargados
         return getStatement(con, "SELECT * FROM Encargados");
     }
 
     public static PreparedStatement GetEmpleados(Connection con) {
-        // Crea un nuevo usuario encargado
+        // Obtiene todos los empleados
         return getStatement(con, "SELECT * FROM Empleados");
     }
 
     public static PreparedStatement GetNombreEmpleados(Connection con) {
-        // Crea un nuevo usuario encargado
+        // Obtiene solo el nombre de todos los empleados
         return getStatement(con, "SELECT nombre_empleado FROM Empleados");
+    }
+    
+    public static PreparedStatement GetNombreEncargados(Connection con) {
+        // Obtiene solo el nombre de todos los encargados
+        return getStatement(con, "SELECT nombre_encargado FROM Encargados");
     }
 
     public static PreparedStatement GetEncargado(Connection con) {
