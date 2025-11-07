@@ -171,50 +171,49 @@
             }
 
 
-            $("#form-nota").submit(function (event) { // Manejo del formulario de publicar nota
+            $("#form-confirmar").submit(function (event) { // Manejo del formulario de confirmacion de accion
                 event.preventDefault(); // Evita que el formulario se envíe de manera tradicional
-                const id = document.getElementById("submit-nota").name;
-                const texto = $("#texto-nota").val();
-                if (texto.length <= 255) {
-                    // Envía los datos al servlet usando AJAX
-                    $.ajax({
-                        url: "TryCrearNota", // URL del servlet
-                        type: "POST",
-                        data: {idRegistro: id, textoNota: texto},
-                        success: function (response) {
-                            if (response === "correcto") {
-                                // Recarga el modal para mostrar la nueva nota
-                                abrirModal(id);
-                            } else if (response === "no_autorizado") {
-                                // Muestra el mensaje de error debajo del formulario
-                                $("#error-nota").text("Error. Tu usuario no está autorizado para esta acción.");
-                            } else {
-                                // Muestra el mensaje de error debajo del formulario
-                                $("#error-nota").text("Error desconocido. Intentelo de nuevo más tarde.");
-                            }
-                        },
-                        error: function () {
-                            $("#error-nota").text("Error al contactar con el servidor. Inténtelo de nuevo más tarde.");
-                        }
-                    });
-                } else {
-                    $("#error-nota").text("La nota no puede tener más de 255 caracteres.");
-                }
-            });
+                const nombre = modal.dataset.nombre; // Nombre del usuario sobre el que se va a aplicar la accion
+                const rol = modal.dataset.rol; // Rol del usuario sobre el que se va a aplicar la accion
+                const accion = modal.dataset.accion; // Accion que se va a aplicar
+                const input = $("#modal-textbox").val();
 
-            $("#logout").on("click", function (e) {
-                e.preventDefault(); // Evita que el enlace redirija directamente
-                // Realiza una solicitud AJAX para cerrar la sesión
+                // Envía los datos al servlet usando AJAX
                 $.ajax({
-                    url: "Logout", // URL del servlet que maneja el cierre de sesión
+                    url: "TryEditarUsuarios", // URL del servlet
                     type: "POST",
-                    success: function () {
-                        window.location.href = "index.html";
+                    data: {nombre: nombre, rol: rol, accion: accion, input: input},
+                    success: function (response) {
+                        if (response === "correcto") {
+                            // Recarga la pagina para mostrar los cambios
+                            window.location.href = "editarusuarios.html";
+                        } else if (response === "no_autorizado") {
+                            // Muestra el mensaje de error debajo del formulario
+                            $("#error-confirmacion").text("Error. Tu usuario no está autorizado para esta acción.");
+                        } else if (response === "usuario_igual") {
+                            // Muestra el mensaje de error debajo del formulario
+                            $("#error-confirmacion").text("Error. No puedes modificar tu propio usuario. Inicia sesión con otra cuenta de encargado.");
+                        } else if (response === "no_coincide") {
+                            // Muestra el mensaje de error debajo del formulario
+                            $("#error-confirmacion").text("El nombre introducido no coincide con " + nombre + ". ¿Seguro que deseas modificar este usuario?");
+                        } else if (response === "muy_largo") {
+                            // Muestra el mensaje de error debajo del formulario
+                            $("#error-confirmacion").text("El nuevo nombre de usuario no puede tener mas de 60 caracteres.");
+                        } else {
+                            // Muestra el mensaje de error debajo del formulario
+                            $("#error-confirmacion").text("Error desconocido. Intentelo de nuevo más tarde.");
+                        }
                     },
                     error: function () {
-                        alert("Error al intentar cerrar la sesión.");
+                        $("#error-nota").text("Error al contactar con el servidor. Inténtelo de nuevo más tarde.");
                     }
                 });
+            });
+
+            $("#volver").on("click", function (e) {
+                e.preventDefault(); // Evita que el enlace redirija directamente
+                // Volver al area personal
+                window.location.href = "areapersonal.html";
             }
             );
         </script>

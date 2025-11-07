@@ -77,6 +77,7 @@
                     </form>
                     <p id="error-message" style="color: red;"></p> <!-- Mensaje de error -->
                     <p id="success-message" style="color: green;"></p> <!-- Mensaje de exito -->
+                    <button id="editar-usuarios">Editar usuarios</button>
                 </div>
                 <div style="background-color: darkgray">
                     <h3>Descargar datos de todos los empleados</h3>
@@ -132,7 +133,7 @@
 
         <div id="modal" class="modal">
             <div>
-            <p id="modal-texto"></p>
+                <p id="modal-texto"></p>
             </div>
             <form id="form-nota">
                 <input type="text" id="texto-nota" name="texto-nota" placeholder="Escribe una nota..." required>
@@ -388,8 +389,15 @@
 
             $("#cambiar-password").on("click", function (e) {
                 e.preventDefault(); // Evita que el enlace redirija directamente
-                // Realiza una solicitud AJAX para cerrar la sesión
+                // Redirige hacia la pagina de cambiar pw
                 window.location.href = "cambiarpw.html";
+            }
+            );
+
+            $("#editar-usuarios").on("click", function (e) {
+                e.preventDefault(); // Evita que el enlace redirija directamente
+                // Redirige hacia la pagina de editar usuarios
+                window.location.href = "editarusuarios.html";
             }
             );
 
