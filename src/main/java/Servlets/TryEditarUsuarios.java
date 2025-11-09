@@ -62,7 +62,10 @@ public class TryEditarUsuarios extends HttpServlet {
                         if (input.length()>60){
                             // El nuevo nombre no puede tener más de 60 caracteres
                             response.getWriter().write("muy_largo");
-                        } else{
+                        } else if (Logic.existeUsuario(input)){
+                            // No puede existir un usuario con el nombre que se desea poner
+                            response.getWriter().write("ya_existe");
+                        }else{
                             // Llamada a logic para cambio de nombre
                             //...
                             response.getWriter().write("correcto");

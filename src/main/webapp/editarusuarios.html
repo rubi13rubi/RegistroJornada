@@ -199,6 +199,9 @@
                         } else if (response === "muy_largo") {
                             // Muestra el mensaje de error debajo del formulario
                             $("#error-confirmacion").text("El nuevo nombre de usuario no puede tener mas de 60 caracteres.");
+                        } else if (response === "ya_existe") {
+                            // Muestra el mensaje de error debajo del formulario
+                            $("#error-confirmacion").text("Ya existe un usuario con el nombre al que se desea cambiar.");
                         } else {
                             // Muestra el mensaje de error debajo del formulario
                             $("#error-confirmacion").text("Error desconocido. Intentelo de nuevo más tarde.");
