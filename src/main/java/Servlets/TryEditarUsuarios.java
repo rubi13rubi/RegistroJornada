@@ -48,7 +48,7 @@ public class TryEditarUsuarios extends HttpServlet {
             String usuario = (String) session.getAttribute("usuario"); // Usuario que realiza la peticion
             String rol = (String) session.getAttribute("rol"); // Rol del usuario que realiza la peticion
             String nombreCambio = request.getParameter("nombre"); // Nombre del usuario que se desea modificar
-            String rolCambio = request.getParameter("nombre"); // Rol del usuario que se desea modificar
+            String rolCambio = request.getParameter("rol"); // Rol del usuario que se desea modificar
             String accion = request.getParameter("accion"); // Accion que se desea realizar
             String input = request.getParameter("input"); // Texto de la caja de texto
 
@@ -67,18 +67,18 @@ public class TryEditarUsuarios extends HttpServlet {
                             response.getWriter().write("ya_existe");
                         }else{
                             // Llamada a logic para cambio de nombre
-                            //...
+                            Logic.cambiarNombre(nombreCambio, input, rolCambio);
                             response.getWriter().write("correcto");
                         }
                     } else{
                         if (input.equals(nombreCambio)){
                             if (accion.equals("cambiarrol")){
                                 // Llamada a logic para cambio de rol
-                                //...
+                                Logic.cambiarRol(nombreCambio, rolCambio);
                                 response.getWriter().write("correcto");
                             } else{
                                 // Llamada a logic para borrado
-                                //...
+                                Logic.borrarUsuario(nombreCambio, rolCambio);
                                 response.getWriter().write("correcto");
                             }
                         } else{

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `registrosDB`.`Registros` (
     PRIMARY KEY (`id_registro`),
     FOREIGN KEY (`nombre_empleado`) REFERENCES `registrosDB`.`Empleados`(`nombre_empleado`) 
         ON DELETE CASCADE  -- Elimina registros de entradas si se elimina el empleado
+        ON UPDATE CASCADE  -- Actualiza la referencia de los registros al editar el nombre del empleado
 );
 
 CREATE TABLE IF NOT EXISTS `registrosDB`.`Notas` (
@@ -35,4 +36,5 @@ CREATE TABLE IF NOT EXISTS `registrosDB`.`Notas` (
     PRIMARY KEY (`id_nota`),
     FOREIGN KEY (`id_registro`) REFERENCES `registrosDB`.`Registros`(`id_registro`)
         ON DELETE CASCADE  -- Elimina notas si se elimina el registro
+        ON UPDATE CASCADE  -- Actualiza la referencia de las notas si se edita el registro
 );

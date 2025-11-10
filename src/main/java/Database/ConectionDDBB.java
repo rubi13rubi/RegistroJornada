@@ -100,6 +100,16 @@ public class ConectionDDBB {
         // Crea un nuevo usuario empleado
         return getStatement(con, "INSERT INTO Empleados(nombre_empleado, hash_pw) VALUES (?, ?)");
     }
+    
+    public static PreparedStatement BorrarEncargado(Connection con) {
+        // Borra un usuario encargado
+        return getStatement(con, "DELETE FROM Encargados WHERE nombre_encargado = ?");
+    }
+
+    public static PreparedStatement BorrarEmpleado(Connection con) {
+        // Borra un usuario empleado
+        return getStatement(con, "DELETE FROM Empleados WHERE nombre_empleado = ?");
+    }
 
     public static PreparedStatement GetEncargados(Connection con) {
         // Obtiene todos los encargados
@@ -164,6 +174,16 @@ public class ConectionDDBB {
     public static PreparedStatement EditarPwEncargado(Connection con) {
         // Actualiza el campo hash_pw de un encargado en la tabla Encargados
         return getStatement(con, "UPDATE Encargados SET hash_pw = ? WHERE nombre_encargado = ?");
+    }
+    
+    public static PreparedStatement EditarNombreEmpleado(Connection con) {
+        // Actualiza el campo nombre_empleado de un empleado en la tabla Empleados
+        return getStatement(con, "UPDATE Empleados SET nombre_empleado = ? WHERE nombre_empleado = ?");
+    }
+
+    public static PreparedStatement EditarNombreEncargado(Connection con) {
+        // Actualiza el campo nombre_encargado de un encargado en la tabla Encargados
+        return getStatement(con, "UPDATE Encargados SET nombre_encargado = ? WHERE nombre_encargado = ?");
     }
 
     public static PreparedStatement GetNotasRegistro(Connection con) {

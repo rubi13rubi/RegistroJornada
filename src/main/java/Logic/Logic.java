@@ -179,7 +179,137 @@ public class Logic {
             conector.closeConnection(con);
         }
     }
+    
+    /**
+     * Cambia el nombre del usuario por uno nuevo.
+     * @param usuario Nombre del usuario para cambiar
+     * @param nuevoUsuario Nuevo nombre del usuario
+     * @param rol rol del usuario que se desea cambiar
+     */
+    public static void cambiarNombre(String usuario, String nuevoUsuario, String rol) {
+        ConectionDDBB conector = new ConectionDDBB();
+        Connection con = null;
+        try {
+            con = conector.obtainConnection(true);
+            Log.log.info("Database Connected");
+            PreparedStatement ps;
+            if (rol.equals("empleado")) {
+                ps = ConectionDDBB.EditarNombreEmpleado(con);
+            } else {
+                ps = ConectionDDBB.EditarNombreEncargado(con);
+            }
+            // Parametros de la sentencia
+            ps.setString(1, nuevoUsuario);
+            ps.setString(2, usuario);
 
+            Log.log.info("Query => " + ps.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            Log.log.error("Error al insertar cambiar nombre: " + e);
+        } catch (NullPointerException e) {
+            Log.log.error("Error: " + e);
+        } catch (Exception e) {
+            Log.log.error("Error inesperado: " + e);
+        } finally {
+            conector.closeConnection(con);
+        }
+    }
+    
+    /**
+     * Borra un usuario
+     * @param usuario Nombre del usuario que se desea borrar
+     * @param rol Rol del usuario que se desea borrar
+     */
+    public static void borrarUsuario(String usuario, String rol) {
+        ConectionDDBB conector = new ConectionDDBB();
+        Connection con = null;
+        try {
+            con = conector.obtainConnection(true);
+            Log.log.info("Database Connected");
+            PreparedStatement ps;
+            if (rol.equals("empleado")) {
+                ps = ConectionDDBB.BorrarEmpleado(con);
+            } else {
+                ps = ConectionDDBB.BorrarEncargado(con);
+            }
+            // Parametros de la sentencia
+            ps.setString(1, usuario);
+
+            Log.log.info("Query => " + ps.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            Log.log.error("Error al borrar usuario: " + e);
+        } catch (NullPointerException e) {
+            Log.log.error("Error: " + e);
+        } catch (Exception e) {
+            Log.log.error("Error inesperado: " + e);
+        } finally {
+            conector.closeConnection(con);
+        }
+    }
+    
+    /**
+     * Cambia el rol de un usuario
+     * @param usuario Nombre del usuario que se desea cambiar
+     * @param rol Rol del usuario que se desea cambiar
+     */
+    public static void cambiarRol(String usuario, String rol) {
+        ConectionDDBB conector = new ConectionDDBB();
+        Connection con = null;
+        try {
+            con = conector.obtainConnection(true);
+            Log.log.info("Database Connected");
+            PreparedStatement ps;
+            // Primera consulta: Obtener el pw hash
+            if (rol.equals("empleado")) {
+                ps = ConectionDDBB.GetEmpleado(con);
+            } else {
+                ps = ConectionDDBB.GetEncargado(con);
+            }
+            ps.setString(1, usuario);
+            
+            Log.log.info("Query => " + ps.toString());
+            ResultSet rs = ps.executeQuery();
+            
+            String hash_pw = "";
+            if (rs.next()){
+                hash_pw = rs.getString("hash_pw");
+            }
+            
+            // Segunda consulta: borrar el usuario
+            if (rol.equals("empleado")) {
+                ps = ConectionDDBB.BorrarEmpleado(con);
+            } else {
+                ps = ConectionDDBB.BorrarEncargado(con);
+            }
+            ps.setString(1, usuario);
+
+            Log.log.info("Query => " + ps.toString());
+            ps.executeUpdate();
+            
+            // Tercera consulta: crear el usuario con el otro rol
+            if (rol.equals("empleado")) {
+                ps = ConectionDDBB.CrearEncargado(con);
+            } else {
+                ps = ConectionDDBB.CrearEmpleado(con);
+            }
+            ps.setString(1, usuario);
+            ps.setString(2, hash_pw);
+
+            Log.log.info("Query => " + ps.toString());
+            ps.executeUpdate();
+            
+        } catch (SQLException e) {
+            Log.log.error("Error al cambiar rol: " + e);
+        } catch (NullPointerException e) {
+            Log.log.error("Error: " + e);
+        } catch (Exception e) {
+            Log.log.error("Error inesperado: " + e);
+        } finally {
+            conector.closeConnection(con);
+        }
+    }
+    
     /**
      * Obtiene una lista con los últimos 20 registros de cualquier empleado
      * @param usuario Nombre del usuario para consultar los registros
