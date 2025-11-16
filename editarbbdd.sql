@@ -1,6 +1,6 @@
 USE registrosDB;
 
--- Quitar la restricción existente en Registros
+-- Quitar la restriccion existente en Registros
 ALTER TABLE `Registros`
 DROP FOREIGN KEY `Registros_ibfk_1`;
 
@@ -12,7 +12,7 @@ REFERENCES `Empleados` (`nombre_empleado`)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
 
--- Quitar la restricción existente en Notas
+-- Quitar la restriccion existente en Notas
 ALTER TABLE `Notas`
 DROP FOREIGN KEY `Notas_ibfk_1`;
 

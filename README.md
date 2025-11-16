@@ -137,7 +137,7 @@ sudo mysql -p
 ```
 e ingresa la contraseña de root definida anteriormente.
 
-Dentro de la consola, pega el contenido del archivo `iniciarbbdd.sql` que se puede encontrar en el código fuente de este repositorio (o en el release para ser consistente con la versión).<br>
+Dentro de la consola, pega el contenido del archivo `iniciarbbdd.sql` que se puede encontrar en el release de la versión que se desea instalar (no uses la versión del repositorio ya que podría estar preparada para una versión posterior en desarrollo).<br>
 Presiona enter para ejecutar el último comando y <b>comprueba que todas las tablas se han creado sin errores.</b>
 
 Para <b>crear el usuario</b>, ingresa estas 3 líneas <b>una por una</b> cambiando "usuario" y "password" por un nombre de usuario y contraseña:
@@ -294,6 +294,27 @@ Si todo funciona, <b>la aplicación ya es segura y puedes empezar a usarla</b>. 
 ```
 sudo certbot renew --dry-run
 ```
+## Actualización de la aplicación
+
+Para usar las nuevas características que se publiquen en el futuro, deberás actualizar la aplicación. Para ello, deberás borrar la versión anterior de la aplicación y desplegar la nueva, usando los siguientes comandos:
+
+```
+sudo systemctl stop tomcat
+sudo rm -rf /opt/tomcat/webapps/RegistroJornada
+sudo rm /opt/tomcat/webapps/RegistroJornada.war
+sudo mv RegistroJornada.war /opt/tomcat/webapps
+sudo chown tomcat:tomcat /opt/tomcat/webapps/RegistroJornada.war
+sudo chmod 777 /opt/tomcat/webapps/RegistroJornada.war
+sudo systemctl start tomcat
+```
+Además, algunas versiones pueden tener <b>cambios en la estructura de la base de datos</b>. Dichas versiones tendrán en su release, además del archivo `iniciarbbdd.sql`, otro llamado `editarbbdd.sql`, que actualizará la base de datos de la anterior versión para que sea compatible con las nuevas funciones.<br>
+Entra en la consola sql usando:
+```
+sudo mysql -p
+```
+e ingresa la contraseña de root de la base de datos.
+
+Dentro de la consola, pega el contenido del archivo `editarbbdd.sql` del release y presiona enter para ejecutar el último comando. Si todos los comandos se han ejecutado correctamente, ya podrás usar la nueva versión.
 
 ## Uso de la aplicación
 
@@ -311,9 +332,19 @@ Una vez creado el primer usuario, <b>podrás entrar con tu usuario y contraseña
 
 Los encargados tienen acceso a todas las <b>funciones necesarias para gestionar sus empleados.</b>
 
-- <b>Crear nuevo usuario:</b> Te permitirá crear tanto nuevos empleados como encargados, introduciendo un usuario, contraseña y rol.
+- <b>Crear nuevo usuario:</b> Te permitirá crear tanto nuevos empleados como encargados, introduciendo un usuario, contraseña y rol. En esta sección también encontrarás un botón que te llevará a la página de [<b>modificar usuarios</b>](#modificar-usuarios)
 - <b>Descargar datos de todos los empleados:</b> Mediante un selector de fecha, puedes seleccionar un intervalo, y al hacer click en descargar, se descargará un archivo registros.zip que contiene un archivo .csv para cada empleado con sus registros en ese intervalo de fechas.
 - <b>Consulta de datos recientes:</b> Selecciona el empleado que quieras consultar y haz click en consultar empleado. La tabla que hay debajo se actualizará automáticamente para mostrar los últimos registros de ese usuario.
+
+### Modificar usuarios
+
+En esta página un empleado podrá visualizar una tabla con todos los empleados y otra con todos los encargados, y realizar las siguientes modificaciones:
+
+- <b>Cambiar nombre:</b> Se pedirá en un cuadro de texto introducir el nuevo nombre del usuario.
+- <b>Cambiar rol:</b> Cambia el rol a empleado si es encargado y viceversa. Al cambiar de encargado a empleado no se pierde ningún dato, pero los empleados perderán todos sus registros de forma irreversible al cambiarse a encargados.
+- <b>Borrar usuario:</b> Borra de forma irreversible el usuario seleccionado, así como todos sus registros si era un empleado. Se pide introducir su nombre de usuario completo como confirmación.
+
+Realizar cualquier modificación en un usuario invalida todas sus sesiones abiertas, teniendo que volver a introducir las credenciales la próxima vez que ese usuario desee utilizar la aplicación.
 
 ### Área personal empleados
 
