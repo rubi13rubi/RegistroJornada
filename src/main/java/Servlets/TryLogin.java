@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import Logic.Log;
 import Logic.Logic;
+import Logic.LoginState;
 import jakarta.servlet.http.HttpSession;
 
 /**
@@ -43,19 +44,23 @@ public class TryLogin extends HttpServlet {
         String password = request.getParameter("password");
 
         try {
-            int loginExitoso = Logic.tryLogin(usuario, password);
+            LoginState estadoLogin = Logic.tryLogin(usuario, password);
+            int loginExitoso = estadoLogin.getState();
+            String stamp = estadoLogin.getStamp();
 
             switch (loginExitoso) {
                 case 1 ->                     {
                         HttpSession session = request.getSession();
                         session.setAttribute("usuario", usuario);
                         session.setAttribute("rol", "empleado");
+                        session.setAttribute("stamp", stamp);
                         response.getWriter().write("correcto");
                     }
                 case 2 ->                     {
                         HttpSession session = request.getSession();
                         session.setAttribute("usuario", usuario);
                         session.setAttribute("rol", "encargado");
+                        session.setAttribute("stamp", stamp);
                         response.getWriter().write("correcto");
                     }
                 case -1 ->                     { // Error de base de datos o de servidor

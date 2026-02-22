@@ -4,12 +4,14 @@ USE registrosDB;
 CREATE TABLE IF NOT EXISTS `registrosDB`.`Encargados` (
     `nombre_encargado` VARCHAR(60) NOT NULL,
     `hash_pw` CHAR(60) NOT NULL,
+    `cookie_stamp` VARCHAR(36) NOT NULL,
     PRIMARY KEY (`nombre_encargado`)
 );
 
 CREATE TABLE IF NOT EXISTS `registrosDB`.`Empleados` (
     `nombre_empleado` VARCHAR(60) NOT NULL,
     `hash_pw` CHAR(60) NOT NULL,
+    `cookie_stamp` VARCHAR(36) NOT NULL,
     PRIMARY KEY (`nombre_empleado`)
 );
 

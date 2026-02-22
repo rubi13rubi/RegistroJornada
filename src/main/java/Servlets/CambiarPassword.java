@@ -46,7 +46,7 @@ public class CambiarPassword extends HttpServlet {
 
         try {
             if (usuario != null) {
-                if (Logic.tryLogin(usuario, passwordVieja) == 0) {
+                if (Logic.tryLogin(usuario, passwordVieja).getState() == 0) {
                     response.getWriter().write("incorrecto");
                 } else {
                     Logic.cambiarPassword(usuario, passwordNueva, rol);

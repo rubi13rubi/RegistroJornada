@@ -93,12 +93,12 @@ public class ConectionDDBB {
 
     public static PreparedStatement CrearEncargado(Connection con) {
         // Crea un nuevo usuario encargado
-        return getStatement(con, "INSERT INTO Encargados(nombre_encargado, hash_pw) VALUES (?, ?)");
+        return getStatement(con, "INSERT INTO Encargados(nombre_encargado, hash_pw, cookie_stamp) VALUES (?, ?, UUID())");
     }
 
     public static PreparedStatement CrearEmpleado(Connection con) {
         // Crea un nuevo usuario empleado
-        return getStatement(con, "INSERT INTO Empleados(nombre_empleado, hash_pw) VALUES (?, ?)");
+        return getStatement(con, "INSERT INTO Empleados(nombre_empleado, hash_pw, cookie_stamp) VALUES (?, ?, UUID())");
     }
     
     public static PreparedStatement BorrarEncargado(Connection con) {
@@ -202,6 +202,16 @@ public class ConectionDDBB {
         // Inserta una nueva nota asociada a un registro
         return getStatement(con,
                 "INSERT INTO Notas (id_registro, autor, fecha, hora, texto) VALUES (?, ?, ?, ?, ?)");
+    }
+    
+    public static PreparedStatement GetStampEncargado(Connection con) {
+        // Obtiene el stamp de cookie de un encargado
+        return getStatement(con, "SELECT cookie_stamp FROM Encargados WHERE nombre_encargado = ?");
+    }
+
+    public static PreparedStatement GetStampEmpleado(Connection con) {
+        // Obtiene el stamp de cookie de un empleado
+        return getStatement(con, "SELECT cookie_stamp FROM Empleados WHERE nombre_empleado = ?");
     }
 
 }

@@ -23,3 +23,30 @@ FOREIGN KEY (`id_registro`)
 REFERENCES `Registros` (`id_registro`)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
+
+-- Columna de stamp para Empleados
+ALTER TABLE `Empleados` 
+ADD COLUMN `cookie_stamp` VARCHAR(36) NULL AFTER `hash_pw`;
+
+-- Generar uuid para Empleados
+UPDATE `Empleados` 
+SET `cookie_stamp` = UUID() 
+WHERE `cookie_stamp` IS NULL;
+
+-- Hacer not null stamp de Empleados
+ALTER TABLE `Empleados` 
+MODIFY COLUMN `cookie_stamp` VARCHAR(36) NOT NULL;
+
+
+-- Columna de stamp para encargados
+ALTER TABLE `Encargados` 
+ADD COLUMN `cookie_stamp` VARCHAR(36) NULL AFTER `hash_pw`;
+
+-- Generar uuid para Encargados
+UPDATE `Encargados` 
+SET `cookie_stamp` = UUID() 
+WHERE `cookie_stamp` IS NULL;
+
+-- Hacer not null stamp de Encargados
+ALTER TABLE `Encargados` 
+MODIFY COLUMN `cookie_stamp` VARCHAR(36) NOT NULL;

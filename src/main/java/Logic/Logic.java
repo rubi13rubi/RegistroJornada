@@ -19,9 +19,11 @@ import java.util.List;
 
 public class Logic {
 
-    public static int tryLogin(String usuario, String password) {
+    public static LoginState tryLogin(String usuario, String password) {
         ConectionDDBB conector = new ConectionDDBB();
         Connection con = null;
+        int state = -1;
+        String stamp = "";
         try {
             con = conector.obtainConnection(true);
             Log.log.info("Database Connected");
@@ -29,25 +31,27 @@ public class Logic {
             ps.setString(1, usuario);
             Log.log.info("Query => " + ps.toString());
             ResultSet rs = ps.executeQuery();
-            int resultado;
+            int resultado = 0;
             if (!rs.next()) {
                 ps = ConectionDDBB.GetEmpleado(con);
                 ps.setString(1, usuario);
                 Log.log.info("Query => " + ps.toString());
                 rs = ps.executeQuery();
                 if (!rs.next()) {
-                    return 0; //No existe el usuario en ninguna de las dos tablas
+                    state = 0; //No existe el usuario en ninguna de las dos tablas
                 } else {
                     resultado = 1; //El usuario es un empleado
+                    stamp = rs.getString("cookie_stamp");
                 }
             } else {
                 resultado = 2; //El usuario es un encargado
+                stamp = rs.getString("cookie_stamp");
             }
             String hash_pw = rs.getString("hash_pw");
             if (BCrypt.checkpw(password, hash_pw)) {//Las pw coinciden, retorna segun es usuario o encargado
-                return resultado;
+                state = resultado;
             } else { //Si no coinciden retorna 0 (error)
-                return 0;
+                state = 0;
             }
         } catch (SQLException e) {
             Log.log.error("Error al comprobar usuario y password" + e);
@@ -58,7 +62,7 @@ public class Logic {
         } finally {
             conector.closeConnection(con);
         }
-        return -1;
+        return new LoginState(state, stamp);
     }
 
     public static Boolean hayEncargados() {
@@ -696,5 +700,46 @@ public class Logic {
             conector.closeConnection(con);
         }
         return resultado;
+    }
+    
+    /**
+     * Verifica si el stamp de la cookie coincide o no
+     * @param nombre nombre del usuario a verificar
+     * @param rol rol del usuario a verificar
+     * @param stamp stamp que se quiere comparar
+     * @return Booleano que determina si es correcto
+     */
+    public static Boolean isSessionValid(String nombre, String rol, String stamp) {
+        ConectionDDBB conector = new ConectionDDBB();
+        Connection con = null;
+        String bdstamp = "";
+        try {
+            con = conector.obtainConnection(true);
+            Log.log.info("Database Connected");
+            PreparedStatement ps;
+            if (rol.equals("empleado")) {
+                ps = ConectionDDBB.GetStampEmpleado(con);
+            } else {
+                ps = ConectionDDBB.GetStampEncargado(con);
+            }
+            // Parametros de la sentencia
+            ps.setString(1, nombre);
+
+            Log.log.info("Query => " + ps.toString());
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()){
+                bdstamp = rs.getString("cookie_stamp");
+            }
+        } catch (SQLException e) {
+            Log.log.error("Error al verificar sello de la bd: " + e);
+        } catch (NullPointerException e) {
+            Log.log.error("Error: " + e);
+        } catch (Exception e) {
+            Log.log.error("Error inesperado: " + e);
+        } finally {
+            conector.closeConnection(con);
+        }
+        return (bdstamp.equals(stamp));
     }
 }
